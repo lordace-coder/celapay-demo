@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingCart, Store, CheckCircle2, ChevronRight, Share2, BarChart3, RotateCcw, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { Seller, Transaction, Product, BankDetails } from "@/lib/types";
+import { Seller, Transaction, Product } from "@/lib/types";
 import { smartQuoteNotes } from "@/ai/flows/smart-quote-notes-flow";
 import { summarizeTransactionPerformance } from "@/ai/flows/transaction-performance-summary";
 
@@ -52,7 +52,6 @@ export default function CelaPayGateway() {
 
   // AI Generated
   const [aiSummary, setAiSummary] = useState<string>("");
-  const [aiSuggestedNote, setAiSuggestedNote] = useState<string>("");
 
   // Navigation
   const go = (n: number) => { setStep(n); setError(""); };
@@ -76,7 +75,6 @@ export default function CelaPayGateway() {
         buyerMessage: buyerForm.message,
         productDescription: selectedProduct.description
       });
-      setAiSuggestedNote(res.suggestedNote);
       setQuoteForm(prev => ({ ...prev, notes: res.suggestedNote }));
     } catch (e) {
       setError("Failed to generate AI note");
@@ -111,7 +109,6 @@ export default function CelaPayGateway() {
     if (products.length === 0) return setError("Add at least one product.");
     
     setLoading(true);
-    // Simulate API delay
     setTimeout(() => {
       const newSeller: Seller = {
         cela_id: `CELA-${Math.random().toString(36).substring(7).toUpperCase()}`,
@@ -136,9 +133,9 @@ export default function CelaPayGateway() {
         status: "PENDING",
         buyer_name: buyerForm.buyer_name,
         product_name: selectedProduct.name,
-        quantity: buyerForm.quantity,
+        quantity: buyerForm.quantity || 1,
         message: buyerForm.message,
-        amount: selectedProduct.price * buyerForm.quantity,
+        amount: selectedProduct.price * (buyerForm.quantity || 1),
       };
       setCurrentTxn(txn);
       setQuoteForm(prev => ({ ...prev, amount: txn.amount.toString() }));
@@ -297,7 +294,7 @@ export default function CelaPayGateway() {
                         <Input 
                           type="number" 
                           min={1} 
-                          value={buyerForm.quantity}
+                          value={Number.isNaN(buyerForm.quantity) ? "" : buyerForm.quantity}
                           onChange={e => setBuyerForm(f => ({ ...f, quantity: parseInt(e.target.value) }))}
                           className="bg-black/20 border-white/10 rounded-xl" 
                         />
@@ -521,10 +518,11 @@ export default function CelaPayGateway() {
                           <Input 
                             type="number" 
                             placeholder="$ Price" 
-                            value={p.price || ""}
+                            value={Number.isNaN(p.price) ? "" : p.price}
                             onChange={e => {
                               const n = [...sellerProducts];
-                              n[i].price = parseFloat(e.target.value);
+                              const val = parseFloat(e.target.value);
+                              n[i].price = Number.isNaN(val) ? 0 : val;
                               setSellerProducts(n);
                             }}
                             className="bg-black/20 border-white/10 rounded-xl w-24 h-11" 
@@ -741,7 +739,6 @@ export default function CelaPayGateway() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <Button variant="outline" className="h-12 rounded-2xl border-white/10" onClick={() => {
-                    // Load records
                     go(8);
                     if (currentTxn) getAnalyticsSummary([currentTxn]);
                   }}>

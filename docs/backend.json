@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "Seller": {
+      "title": "Seller Profile",
+      "description": "Information about a business merchant using Cela Pay.",
+      "type": "object",
+      "properties": {
+        "cela_id": { "type": "string", "description": "Unique merchant identifier." },
+        "business_name": { "type": "string" },
+        "seller_name": { "type": "string" },
+        "category": { "type": "string" },
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "pending": { "type": "number" },
+            "awaiting": { "type": "number" },
+            "completed": { "type": "number" },
+            "declined": { "type": "number" }
+          }
+        }
+      },
+      "required": ["cela_id", "business_name", "seller_name"]
+    },
+    "Transaction": {
+      "title": "Payment Transaction",
+      "description": "Records a payment request and its lifecycle.",
+      "type": "object",
+      "properties": {
+        "txn_id": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "AWAITING", "AWAITING_CONFIRMATION", "PAYMENT_SUBMITTED", "COMPLETED", "DECLINED"] },
+        "buyer_name": { "type": "string" },
+        "product_name": { "type": "string" },
+        "amount": { "type": "number" },
+        "quantity": { "type": "number" },
+        "message": { "type": "string" },
+        "notes": { "type": "string" },
+        "seller_id": { "type": "string" },
+        "bank_details": {
+          "type": "object",
+          "properties": {
+            "bank_name": { "type": "string" },
+            "account_name": { "type": "string" },
+            "account_number": { "type": "string" },
+            "routing_number": { "type": "string" }
+          }
+        }
+      },
+      "required": ["txn_id", "status", "buyer_name", "product_name", "amount"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/sellers/{sellerId}": {
+      "schema": "Seller",
+      "description": "Business merchant data."
+    },
+    "/transactions/{txnId}": {
+      "schema": "Transaction",
+      "description": "Payment and quote records."
+    }
+  }
+}
