@@ -427,8 +427,9 @@ export default function CelaApp() {
   // React to status changes
   useEffect(() => {
     if (!txnData) return;
-    if (txnData.status === "AWAITING"          && step === 3) go(5);
-    if (txnData.status === "PAYMENT_SUBMITTED" && step === 5) go(6);
+    // Auto-advance to Step 4 (Buyer Pays) when status becomes AWAITING
+    if (txnData.status === "AWAITING"          && step === 3) go(4);
+    if (txnData.status === "PAYMENT_SUBMITTED" && step === 4) go(6);
     if (txnData.status === "COMPLETED"         && step < 7)   go(7);
     if (txnData.status === "DECLINED"          && step !== 7) go(99);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -496,7 +497,7 @@ export default function CelaApp() {
         routing_number: quoteForm.routing_number,
       });
       setTxnData(res);
-      go(4);
+      go(4); // Seller and Buyer now both move to step 4 for the payment flow
     } catch {
       setError("Failed to send quote.");
     } finally {
@@ -614,7 +615,7 @@ export default function CelaApp() {
       </>
     );
 
-    if (step === 5) return (
+    if (step === 4) return (
       <>
         <Notif icon="📩" title="Quote received!" body="Seller reviewed your request. Review the quote below." variant="green" />
         <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-2xl p-5 mb-4">
@@ -622,7 +623,7 @@ export default function CelaApp() {
           <div className="text-4xl font-black text-amber-400 font-mono">${Number(txnData?.amount ?? 0).toFixed(2)}</div>
           {txnData?.notes && <div className="text-xs text-slate-400 mt-1">{txnData.notes}</div>}
         </div>
-        <InfoCard label="Status" value={<Badge status="AWAITING_CONFIRMATION" />} />
+        <InfoCard label="Status" value={<Badge status="AWAITING" />} />
         <SectionTitle>Bank Transfer Details</SectionTitle>
         {BANK_KEYS.map(([label, key]) => (
           <div key={key} className="flex justify-between items-center py-2 border-b border-white/[0.05] text-sm last:border-none">
