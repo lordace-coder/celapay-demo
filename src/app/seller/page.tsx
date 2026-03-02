@@ -13,18 +13,19 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Navbar } from "@/components/shared/Navbar";
 import { Seller, Transaction, Product } from "@/lib/types";
 import { smartQuoteNotes } from "@/ai/flows/smart-quote-notes-flow";
-import { useUser, useFirestore, useDoc, useCollection } from "@/firebase";
+import { useFirestore, useDoc, useCollection } from "@/firebase";
 import { doc, setDoc, collection, query, where, updateDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
+const DEMO_SELLER_ID = "demo-merchant-99"; // Hardcoded ID for demo purposes
+
 export default function SellerPage() {
-  const { user } = useUser();
   const db = useFirestore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
-  const sellerId = user?.uid;
+  const sellerId = DEMO_SELLER_ID;
   const sellerRef = useMemo(() => (sellerId ? doc(db, "sellers", sellerId) : null), [db, sellerId]);
   const { data: seller } = useDoc<Seller>(sellerRef);
   
@@ -38,14 +39,14 @@ export default function SellerPage() {
   const [quoteForm, setQuoteForm] = useState({ amount: "", notes: "", bank_name: "First National Bank", account_name: "", account_number: "", routing_number: "" });
 
   const handleOnboard = async () => {
-    if (!db || !user || !sellerRef) return;
+    if (!db || !sellerRef) return;
     const products = onboardProducts.filter(p => p.name.trim() && p.price > 0);
     if (!onboardForm.business_name || !onboardForm.seller_name) return setError("Fill in all merchant fields.");
     if (products.length === 0) return setError("Add at least one product.");
 
     setLoading(true);
     const newSeller: Seller = {
-      cela_id: `CELA-${user.uid.substring(0, 6).toUpperCase()}`,
+      cela_id: `CELA-${sellerId.substring(0, 6).toUpperCase()}`,
       ...onboardForm,
       products,
       stats: { pending: 0, awaiting: 0, completed: 0, declined: 0 }
@@ -110,17 +111,6 @@ export default function SellerPage() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#161514] flex flex-col items-center justify-center p-6 text-center">
-        <Store className="w-16 h-16 text-slate-700 mb-4" />
-        <h1 className="text-2xl font-display font-black">Merchant Access Required</h1>
-        <p className="text-slate-500 mt-2 text-sm">Please sign in to access your business console.</p>
-        <Button className="mt-8 bg-primary hover:bg-primary/80">Sign In with Google</Button>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#161514] text-slate-100 flex flex-col font-body">
       <Navbar />
@@ -129,7 +119,7 @@ export default function SellerPage() {
         {!seller ? (
           <div className="space-y-8 animate-in fade-in slide-in-from-top-4">
             <div className="text-center space-y-2">
-              <h2 className="text-3xl font-display font-black">Merchant Onboarding</h2>
+              <h2 className="text-3xl font-display font-black">Merchant Onboarding (Demo)</h2>
               <p className="text-sm text-slate-500">Register your business and start accepting payments.</p>
             </div>
 
@@ -203,7 +193,7 @@ export default function SellerPage() {
               {[
                 { label: "New Requests", value: transactions?.filter(t => t.status === "PENDING").length || 0, icon: RotateCcw, color: "text-amber-500" },
                 { label: "Completed", value: transactions?.filter(t => t.status === "COMPLETED").length || 0, icon: CheckCircle2, color: "text-accent" },
-                { label: "Merchant Link", value: "Copy", icon: Share2, color: "text-primary" },
+                { label: "Merchant Link", value: seller.cela_id, icon: Share2, color: "text-primary" },
               ].map((stat, i) => (
                 <Card key={i} className="bg-white/[0.03] border-white/10 rounded-3xl p-6">
                   <div className="flex justify-between items-start">
