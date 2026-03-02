@@ -195,7 +195,7 @@ function Notif({ icon, title, body, variant = "default" }: NotifProps) {
   };
   return (
     <div className={`flex gap-3 p-3.5 rounded-xl border mb-4 ${styles[variant]}`}>
-      <span className="text-xl leading-none mt-0.5">{icon}</span>
+      <span className="text-xl leading-none mt-0.5 shrink-0">{icon}</span>
       <div>
         {title && <div className="text-sm font-semibold text-slate-200 mb-0.5">{title}</div>}
         <div className="text-xs text-slate-400 leading-relaxed">{body}</div>
@@ -221,25 +221,27 @@ const FLOW_STEPS = [
 
 function FlowBar({ currentStep }: { currentStep: number }) {
   return (
-    <div className="flex items-center justify-center gap-0 px-6 py-3 bg-slate-900/60 border-b border-white/[0.06] overflow-x-auto">
+    <div className="flex items-center justify-start gap-0 px-3 sm:px-6 py-2.5 bg-slate-900/60 border-b border-white/[0.06] overflow-x-auto scrollbar-hide">
       {FLOW_STEPS.map((label, i) => {
         const num = i + 1;
         const done = num < currentStep;
         const active = num === currentStep;
         return (
           <div key={num} className="flex items-center gap-0 shrink-0">
-            {i > 0 && <span className="text-slate-700 px-1 text-xs">›</span>}
+            {i > 0 && <span className="text-slate-700 px-0.5 sm:px-1 text-xs">›</span>}
             <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-semibold whitespace-nowrap transition-all ${
                 active ? "bg-amber-500/15 text-amber-400" : done ? "text-emerald-500" : "text-slate-600"
               }`}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full ${
+                className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                   active ? "bg-amber-400 scale-125" : done ? "bg-emerald-500" : "bg-slate-700"
                 }`}
               />
-              {num}. {label}
+              {/* Show number always, label only on sm+ */}
+              <span className="sm:hidden">{num}</span>
+              <span className="hidden sm:inline">{num}. {label}</span>
             </div>
           </div>
         );
@@ -252,8 +254,8 @@ function FlowBar({ currentStep }: { currentStep: number }) {
 
 function StatBox({ value, label, color }: { value: number; label: string; color: string }) {
   return (
-    <div className={`rounded-xl p-3.5 text-center border ${color}`}>
-      <div className="text-2xl font-black font-mono">{value}</div>
+    <div className={`rounded-xl p-3 sm:p-3.5 text-center border ${color}`}>
+      <div className="text-xl sm:text-2xl font-black font-mono">{value}</div>
       <div className="text-[10px] text-slate-400 mt-0.5">{label}</div>
     </div>
   );
@@ -270,14 +272,14 @@ function ProductCard({ product, selected, onClick }: ProductCardProps) {
   return (
     <div
       onClick={onClick}
-      className={`p-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${
+      className={`p-3 sm:p-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${
         selected
           ? "border-amber-500/50 bg-amber-500/[0.08] shadow-sm shadow-amber-500/10"
           : "border-white/[0.07] bg-white/[0.03] hover:border-white/[0.15] hover:bg-white/[0.06]"
       }`}
     >
       <div className="text-sm font-semibold text-slate-200 mb-1">{product.name}</div>
-      <div className="text-lg font-black text-amber-400">${Number(product.price).toFixed(2)}</div>
+      <div className="text-base sm:text-lg font-black text-amber-400">${Number(product.price).toFixed(2)}</div>
       {product.description && (
         <div className="text-[10px] text-slate-500 mt-1">{product.description}</div>
       )}
@@ -300,7 +302,7 @@ type ReceiptRow = [string, ReactNode] | null;
 
 function Receipt({ data }: { data: ReceiptData }) {
   const rows: ReceiptRow[] = [
-    ["Transaction ID", <span key="txn" className="font-mono text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">{data.txnId}</span>],
+    ["Transaction ID", <span key="txn" className="font-mono text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded break-all">{data.txnId}</span>],
     ["CELA ID",        <span key="cela" className="font-mono text-xs text-amber-400">{data.celaId}</span>],
     null,
     ["Product", data.product ?? "—"],
@@ -312,14 +314,14 @@ function Receipt({ data }: { data: ReceiptData }) {
   ];
 
   return (
-    <div className="bg-white/[0.02] border border-dashed border-white/[0.1] rounded-xl p-5 my-4 text-sm">
+    <div className="bg-white/[0.02] border border-dashed border-white/[0.1] rounded-xl p-4 sm:p-5 my-4 text-sm">
       {rows.map((row, i) =>
         row === null ? (
           <hr key={i} className="border-dashed border-white/[0.08] my-2.5" />
         ) : (
-          <div key={i} className="flex justify-between items-center py-1.5">
-            <span className="text-slate-500 text-xs">{row[0]}</span>
-            <span className="text-slate-200 font-medium">{row[1]}</span>
+          <div key={i} className="flex justify-between items-start gap-2 py-1.5">
+            <span className="text-slate-500 text-xs shrink-0">{row[0]}</span>
+            <span className="text-slate-200 font-medium text-right">{row[1]}</span>
           </div>
         )
       )}
@@ -337,11 +339,11 @@ interface SuccessScreenProps {
 }
 function SuccessScreen({ icon, title, subtitle, children }: SuccessScreenProps) {
   return (
-    <div className="text-center px-4 py-6">
-      <div className="w-16 h-16 rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 flex items-center justify-center text-3xl mx-auto mb-4">
+    <div className="text-center px-2 sm:px-4 py-4 sm:py-6">
+      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-4">
         {icon}
       </div>
-      <div className="text-xl font-black text-slate-100 mb-1">{title}</div>
+      <div className="text-lg sm:text-xl font-black text-slate-100 mb-1">{title}</div>
       <div className="text-sm text-slate-400 mb-2">{subtitle}</div>
       {children}
     </div>
@@ -356,19 +358,20 @@ interface PanelProps {
   sub: string;
   badge?: BadgeStatus;
   children: ReactNode;
+  active?: boolean;
 }
-function Panel({ icon, title, sub, badge, children }: PanelProps) {
+function Panel({ icon, title, sub, badge, children, active = true }: PanelProps) {
   return (
-    <div className="flex flex-col h-full bg-white/[0.02] border border-white/[0.07] rounded-2xl overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06] shrink-0">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg bg-white/[0.06]">{icon}</div>
+    <div className={`flex flex-col bg-white/[0.02] border border-white/[0.07] rounded-2xl overflow-hidden h-full transition-opacity ${active ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+      <div className="flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-4 border-b border-white/[0.06] shrink-0">
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-base sm:text-lg bg-white/[0.06] shrink-0">{icon}</div>
         <div className="flex-1 min-w-0">
           <div className="font-black text-slate-100 text-sm">{title}</div>
           <div className="text-[10px] text-slate-500 truncate">{sub}</div>
         </div>
         {badge && <Badge status={badge} />}
       </div>
-      <div className="flex-1 overflow-y-auto p-5">{children}</div>
+      <div className="flex-1 overflow-y-auto p-4 sm:p-5">{children}</div>
     </div>
   );
 }
@@ -382,10 +385,53 @@ const BANK_KEYS: [string, keyof BankDetails][] = [
   ["Routing No.",  "routing_number"],
 ];
 
+// ─── MOBILE TAB BAR ───────────────────────────────────────────────────────────
+
+interface MobileTabBarProps {
+  activeTab: "buyer" | "seller";
+  onTabChange: (tab: "buyer" | "seller") => void;
+  buyerBadge?: BadgeStatus;
+  sellerLive?: boolean;
+}
+function MobileTabBar({ activeTab, onTabChange, buyerBadge, sellerLive }: MobileTabBarProps) {
+  return (
+    <div className="flex lg:hidden border-b border-white/[0.06] bg-[#0d1b2a] shrink-0">
+      <button
+        onClick={() => onTabChange("buyer")}
+        className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all border-b-2 ${
+          activeTab === "buyer"
+            ? "border-amber-400 text-amber-400 bg-amber-500/[0.04]"
+            : "border-transparent text-slate-500 hover:text-slate-300"
+        }`}
+      >
+        <span>🛒</span>
+        <span>Buyer</span>
+        {buyerBadge && activeTab !== "buyer" && (
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+        )}
+      </button>
+      <div className="w-px bg-white/[0.06] my-2" />
+      <button
+        onClick={() => onTabChange("seller")}
+        className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all border-b-2 ${
+          activeTab === "seller"
+            ? "border-amber-400 text-amber-400 bg-amber-500/[0.04]"
+            : "border-transparent text-slate-500 hover:text-slate-300"
+        }`}
+      >
+        <span>🏪</span>
+        <span>Seller</span>
+        {sellerLive && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
+      </button>
+    </div>
+  );
+}
+
 // ─── APP ──────────────────────────────────────────────────────────────────────
 
 export default function CelaApp() {
   const [step, setStep] = useState(1);
+  const [mobileTab, setMobileTab] = useState<"buyer" | "seller">("seller");
 
   const [seller, setSeller]         = useState<OnboardResponse | null>(null);
   const [sellerData, setSellerData] = useState<Seller | null>(null);
@@ -427,13 +473,20 @@ export default function CelaApp() {
   // React to status changes
   useEffect(() => {
     if (!txnData) return;
-    // Auto-advance to Step 4 (Buyer Pays) when status becomes AWAITING
     if (txnData.status === "AWAITING"          && step === 3) go(4);
     if (txnData.status === "PAYMENT_SUBMITTED" && step === 4) go(6);
     if (txnData.status === "COMPLETED"         && step < 7)   go(7);
     if (txnData.status === "DECLINED"          && step !== 7) go(99);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txnData?.status]);
+
+  // Auto-switch mobile tab to notify user of relevant activity
+  useEffect(() => {
+    if (step === 3) setMobileTab("seller"); // seller needs to review
+    if (step === 4) setMobileTab("buyer");  // buyer needs to pay
+    if (step === 6) setMobileTab("seller"); // seller needs to confirm
+    if (step === 7) setMobileTab("buyer");  // receipt shown to buyer
+  }, [step]);
 
   // ── HANDLERS ────────────────────────────────────────────────────────────────
 
@@ -452,6 +505,7 @@ export default function CelaApp() {
       setSellerData(data);
       setQuoteForm((f) => ({ ...f, account_name: sellerForm.business_name }));
       go(2);
+      setMobileTab("buyer"); // switch to buyer so they can shop
     } catch {
       setError("Backend error — make sure Next.js is running.");
     } finally {
@@ -497,7 +551,7 @@ export default function CelaApp() {
         routing_number: quoteForm.routing_number,
       });
       setTxnData(res);
-      go(4); // Seller and Buyer now both move to step 4 for the payment flow
+      go(4);
     } catch {
       setError("Failed to send quote.");
     } finally {
@@ -562,6 +616,7 @@ export default function CelaApp() {
     setSellerProducts([{ name: "", price: "" }, { name: "", price: "" }]);
     setBuyerForm({ buyer_name: "", message: "", quantity: 1 });
     setError(""); go(1);
+    setMobileTab("seller");
   };
 
   const stats = sellerData?.stats ?? { pending: 0, awaiting: 0, completed: 0, declined: 0 };
@@ -571,9 +626,12 @@ export default function CelaApp() {
 
   const renderBuyer = (): ReactNode => {
     if (step === 1) return (
-      <div className="flex flex-col items-center justify-center h-full py-16 text-center text-slate-600 gap-3">
+      <div className="flex flex-col items-center justify-center h-full py-12 text-center text-slate-600 gap-3">
         <span className="text-4xl">⏳</span>
         <p className="text-sm">Waiting for seller to complete onboarding...</p>
+        <button onClick={() => setMobileTab("seller")} className="lg:hidden text-xs text-amber-400/70 underline mt-1">
+          Go to Seller →
+        </button>
       </div>
     );
 
@@ -612,23 +670,26 @@ export default function CelaApp() {
         <InfoCard label="Transaction ID" value={txnData?.txn_id ?? "—"} mono />
         <InfoCard label="CELA ID" value={seller?.cela_id ?? "—"} mono />
         <div className="text-center text-slate-600 text-xs mt-6">Polling for updates every 2s...</div>
+        <button onClick={() => setMobileTab("seller")} className="lg:hidden w-full mt-4 text-xs text-amber-400/70 underline">
+          Seller needs to review → switch to Seller tab
+        </button>
       </>
     );
 
     if (step === 4) return (
       <>
         <Notif icon="📩" title="Quote received!" body="Seller reviewed your request. Review the quote below." variant="green" />
-        <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-2xl p-5 mb-4">
+        <div className="bg-amber-500/[0.07] border border-amber-500/20 rounded-2xl p-4 sm:p-5 mb-4">
           <div className="text-[9px] font-semibold text-amber-500/70 uppercase tracking-widest mb-1">Total Amount</div>
-          <div className="text-4xl font-black text-amber-400 font-mono">${Number(txnData?.amount ?? 0).toFixed(2)}</div>
+          <div className="text-3xl sm:text-4xl font-black text-amber-400 font-mono">${Number(txnData?.amount ?? 0).toFixed(2)}</div>
           {txnData?.notes && <div className="text-xs text-slate-400 mt-1">{txnData.notes}</div>}
         </div>
         <InfoCard label="Status" value={<Badge status="AWAITING" />} />
         <SectionTitle>Bank Transfer Details</SectionTitle>
         {BANK_KEYS.map(([label, key]) => (
-          <div key={key} className="flex justify-between items-center py-2 border-b border-white/[0.05] text-sm last:border-none">
-            <span className="text-slate-500 text-xs">{label}</span>
-            <span className="text-slate-200 font-medium font-mono text-xs">{txnData?.bank_details?.[key] ?? "—"}</span>
+          <div key={key} className="flex justify-between items-center py-2 border-b border-white/[0.05] text-sm last:border-none gap-2">
+            <span className="text-slate-500 text-xs shrink-0">{label}</span>
+            <span className="text-slate-200 font-medium font-mono text-xs text-right break-all">{txnData?.bank_details?.[key] ?? "—"}</span>
           </div>
         ))}
         <div className="flex gap-2 mt-5">
@@ -644,6 +705,9 @@ export default function CelaApp() {
         <InfoCard label="Status" value={<Badge status="PAYMENT_SUBMITTED" />} />
         <InfoCard label="Amount" value={`$${Number(txnData?.amount ?? 0).toFixed(2)}`} highlight />
         <div className="text-center text-slate-600 text-xs mt-6">Polling for confirmation...</div>
+        <button onClick={() => setMobileTab("seller")} className="lg:hidden w-full mt-4 text-xs text-amber-400/70 underline">
+          Seller needs to confirm → switch to Seller tab
+        </button>
       </>
     );
 
@@ -655,8 +719,8 @@ export default function CelaApp() {
     );
 
     if (isDeclined) return (
-      <div className="text-center py-16">
-        <div className="w-16 h-16 rounded-full bg-red-500/15 border-2 border-red-500/30 flex items-center justify-center text-3xl mx-auto mb-4">✗</div>
+      <div className="text-center py-12">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500/15 border-2 border-red-500/30 flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-4">✗</div>
         <div className="text-lg font-black text-red-400 mb-1">Transaction Declined</div>
         <div className="text-sm text-slate-500 mb-6">This transaction was declined.</div>
         <Btn variant="outline" onClick={resetTransaction}>🔄 Try Again</Btn>
@@ -690,12 +754,12 @@ export default function CelaApp() {
         <SectionTitle>Products</SectionTitle>
         {sellerProducts.map((p, i) => (
           <div key={i} className="flex gap-2 mb-2">
-            <input className="flex-[2] bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
+            <input className="flex-[2] bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50 min-w-0"
               placeholder="Product name" value={p.name}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const next = [...sellerProducts]; next[i] = { ...next[i], name: e.target.value }; setSellerProducts(next);
               }} />
-            <input className="flex-1 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
+            <input className="w-20 shrink-0 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
               placeholder="$" type="number" min={1} value={p.price}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const next = [...sellerProducts]; next[i] = { ...next[i], price: e.target.value }; setSellerProducts(next);
@@ -722,7 +786,7 @@ export default function CelaApp() {
         <Notif icon="📭" title="Storefront is live!" body="Waiting for a buyer to submit a quote request..." />
         <div className="mt-3 p-3 bg-white/[0.02] border border-white/[0.05] rounded-xl text-xs text-slate-500">
           <div className="font-semibold text-slate-400 mb-1">CELA ID</div>
-          <div className="font-mono text-amber-400 text-[11px]">{seller?.cela_id}</div>
+          <div className="font-mono text-amber-400 text-[11px] break-all">{seller?.cela_id}</div>
         </div>
       </>
     );
@@ -761,6 +825,9 @@ export default function CelaApp() {
         <InfoCard label="Quote Amount" value={`$${parseFloat(quoteForm.amount || "0").toFixed(2)}`} highlight />
         <InfoCard label="Transaction ID" value={txnData?.txn_id ?? "—"} mono />
         <div className="text-center text-slate-600 text-xs mt-4">Polling for buyer payment...</div>
+        <button onClick={() => setMobileTab("buyer")} className="lg:hidden w-full mt-4 text-xs text-amber-400/70 underline">
+          Buyer needs to pay → switch to Buyer tab
+        </button>
       </>
     );
 
@@ -784,9 +851,9 @@ export default function CelaApp() {
       <SuccessScreen icon="🎉" title="Payment Confirmed!" subtitle={<><strong className="text-emerald-400">COMPLETED</strong> — receipt issued to buyer</>}>
         <div className="bg-white/[0.02] border border-dashed border-white/[0.1] rounded-xl p-4 my-4 text-sm">
           {([["Transaction", txnData?.txn_id], ["Buyer", txnData?.buyer_name], ["Amount", `$${Number(txnData?.amount ?? 0).toFixed(2)}`]] as [string, string | undefined][]).map(([k, v]) => (
-            <div key={k} className="flex justify-between py-1.5 border-b border-white/[0.07] last:border-none">
-              <span className="text-slate-500 text-xs">{k}</span>
-              <span className={k === "Amount" ? "text-emerald-400 font-bold" : "text-slate-200 font-medium text-xs font-mono"}>{v ?? "—"}</span>
+            <div key={k} className="flex justify-between py-1.5 border-b border-white/[0.07] last:border-none gap-2">
+              <span className="text-slate-500 text-xs shrink-0">{k}</span>
+              <span className={k === "Amount" ? "text-emerald-400 font-bold" : "text-slate-200 font-medium text-xs font-mono text-right break-all"}>{v ?? "—"}</span>
             </div>
           ))}
           <div className="flex justify-between py-1.5">
@@ -813,9 +880,9 @@ export default function CelaApp() {
         {records.length === 0 ? (
           <p className="text-slate-600 text-xs text-center py-6">No transactions yet.</p>
         ) : records.map((t) => (
-          <div key={t.txn_id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3.5 mb-2">
-            <div className="flex justify-between items-center mb-1">
-              <span className="font-mono text-[10px] text-amber-400">{t.txn_id}</span>
+          <div key={t.txn_id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-3.5 mb-2">
+            <div className="flex justify-between items-center mb-1 gap-2">
+              <span className="font-mono text-[10px] text-amber-400 truncate">{t.txn_id}</span>
               <Badge status={t.status} />
             </div>
             <div className="text-xs text-slate-400">{t.buyer_name} · {t.product_name}</div>
@@ -837,8 +904,8 @@ export default function CelaApp() {
     );
 
     if (isDeclined) return (
-      <div className="text-center py-16">
-        <div className="w-16 h-16 rounded-full bg-red-500/15 border-2 border-red-500/30 flex items-center justify-center text-3xl mx-auto mb-4">✗</div>
+      <div className="text-center py-12">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500/15 border-2 border-red-500/30 flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-4">✗</div>
         <div className="text-lg font-black text-red-400 mb-1">Declined</div>
         <div className="text-sm text-slate-500 mb-6">Transaction was declined.</div>
         <Btn variant="outline" onClick={resetTransaction}>🔄 New Transaction</Btn>
@@ -857,36 +924,53 @@ export default function CelaApp() {
   return (
     <div className="min-h-screen bg-[#0d1b2a] text-slate-100 flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] bg-[#0d1b2a]/90 backdrop-blur-sm sticky top-0 z-50">
-        <div className="font-black text-xl tracking-tight" style={{ fontFamily: "Syne, sans-serif" }}>
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/[0.06] bg-[#0d1b2a]/90 backdrop-blur-sm sticky top-0 z-50 gap-2">
+        <div className="font-black text-lg sm:text-xl tracking-tight shrink-0" style={{ fontFamily: "Syne, sans-serif" }}>
           CELA <span className="text-amber-400">PAY</span>
         </div>
-        <div className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold rounded-full uppercase tracking-widest">
+        <div className="hidden sm:flex px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold rounded-full uppercase tracking-widest shrink-0">
           MVP Demo
         </div>
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          Step <span className="text-amber-400 font-bold text-base">{Math.min(step, 9)}</span> / 9
+        <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-slate-500 min-w-0">
+          <span className="shrink-0">Step <span className="text-amber-400 font-bold text-base">{Math.min(step, 9)}</span><span className="hidden sm:inline"> / 9</span></span>
           <span className="hidden sm:inline text-slate-600">·</span>
-          <span className="hidden sm:inline text-xs">{FLOW_STEPS[Math.min(step, 9) - 1]}</span>
-          <Btn variant="ghost" className="text-xs ml-2 px-2 py-1" onClick={fullReset}>↺ Reset</Btn>
+          <span className="hidden md:inline text-xs truncate">{FLOW_STEPS[Math.min(step, 9) - 1]}</span>
+          <Btn variant="ghost" className="text-xs px-2 py-1 shrink-0" onClick={fullReset}>↺ Reset</Btn>
         </div>
       </header>
 
       <FlowBar currentStep={Math.min(step, 9)} />
 
-      <main className="flex-1 grid grid-cols-[1fr_60px_1fr] gap-0 p-5 max-w-6xl mx-auto w-full" style={{ minHeight: 0 }}>
-        <Panel icon="🛒" title="Buyer" sub={txnData?.buyer_name ?? "Browse & purchase"} badge={buyerBadge}>
-          {renderBuyer()}
-        </Panel>
+      {/* Mobile tab switcher */}
+      <MobileTabBar
+        activeTab={mobileTab}
+        onTabChange={setMobileTab}
+        buyerBadge={buyerBadge}
+        sellerLive={!!seller}
+      />
 
-        <div className="flex flex-col items-center justify-start pt-32 relative">
+      {/* Main layout */}
+      <main className="flex-1 flex flex-col lg:grid lg:grid-cols-[1fr_56px_1fr] p-3 sm:p-4 lg:p-5 gap-3 lg:gap-0 max-w-6xl mx-auto w-full" style={{ minHeight: 0 }}>
+
+        {/* Buyer panel — hidden on mobile when seller tab active */}
+        <div className={`flex flex-col ${mobileTab === "buyer" ? "flex" : "hidden"} lg:flex min-h-[60vh] lg:min-h-0`}>
+          <Panel icon="🛒" title="Buyer" sub={txnData?.buyer_name ?? "Browse & purchase"} badge={buyerBadge}>
+            {renderBuyer()}
+          </Panel>
+        </div>
+
+        {/* Divider — desktop only */}
+        <div className="hidden lg:flex flex-col items-center justify-start pt-32 relative">
           <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/[0.06]" />
           <div className="relative z-10 w-9 h-9 rounded-full bg-[#1b2d42] border border-white/[0.1] flex items-center justify-center text-amber-400 text-sm animate-pulse">↔</div>
         </div>
 
-        <Panel icon="🏪" title="Seller" sub={sellerData?.business_name ?? "Set up your store"} badge={seller ? "LIVE" : undefined}>
-          {renderSeller()}
-        </Panel>
+        {/* Seller panel — hidden on mobile when buyer tab active */}
+        <div className={`flex flex-col ${mobileTab === "seller" ? "flex" : "hidden"} lg:flex min-h-[60vh] lg:min-h-0`}>
+          <Panel icon="🏪" title="Seller" sub={sellerData?.business_name ?? "Set up your store"} badge={seller ? "LIVE" : undefined}>
+            {renderSeller()}
+          </Panel>
+        </div>
       </main>
     </div>
   );
