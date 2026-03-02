@@ -1,26 +1,26 @@
+
 "use client";
 
 import { ShoppingCart, Store, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/Navbar";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#161514] text-slate-100 flex flex-col font-body">
+    <div className="min-h-screen bg-[#161514] text-slate-100 flex flex-col">
       <Navbar />
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto space-y-12">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest animate-pulse">
-            <ShieldCheck className="w-3 h-3" /> Institutional Grade B2B Payments
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest">
+            <ShieldCheck className="w-3 h-3" /> Secure B2B Settlement Protocol
           </div>
           <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter uppercase leading-none">
-            Smart <span className="text-primary">B2B</span> <br /> Settlements
+            Institutional <br /> <span className="text-primary">Settlements</span>
           </h1>
           <p className="text-slate-400 max-w-lg mx-auto text-sm md:text-base leading-relaxed">
-            Cela Pay provides a secure, real-time gateway for merchants to manage quotes, 
-            verify bank transfers, and generate professional receipts instantly.
+            Professional gateway for high-value B2B transactions. Manage quotes, 
+            verify bank transfers, and generate receipts with real-time sync.
           </p>
         </div>
 
@@ -31,11 +31,11 @@ export default function LandingPage() {
                 <Store className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-xl font-display font-bold">I am a Seller</h2>
-                <p className="text-xs text-slate-500 mt-2">Manage products, send custom quotes, and track incoming bank transfers.</p>
+                <h2 className="text-xl font-display font-bold">Seller Console</h2>
+                <p className="text-xs text-slate-500 mt-2">Onboard your business, manage high-value service catalogs, and approve settlements.</p>
               </div>
               <div className="flex items-center text-accent text-xs font-bold uppercase tracking-widest gap-2">
-                Launch Console <ArrowRight className="w-4 h-4" />
+                Merchant Access <ArrowRight className="w-4 h-4" />
               </div>
             </div>
           </Link>
@@ -46,11 +46,11 @@ export default function LandingPage() {
                 <ShoppingCart className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-xl font-display font-bold">I am a Buyer</h2>
-                <p className="text-xs text-slate-500 mt-2">Browse merchant stores, request price quotes, and secure your purchases.</p>
+                <h2 className="text-xl font-display font-bold">Buyer Gateway</h2>
+                <p className="text-xs text-slate-500 mt-2">Access private storefronts via Merchant ID, request pricing, and secure purchases.</p>
               </div>
               <div className="flex items-center text-primary text-xs font-bold uppercase tracking-widest gap-2">
-                Enter Gateway <ArrowRight className="w-4 h-4" />
+                Enter Storefront <ArrowRight className="w-4 h-4" />
               </div>
             </div>
           </Link>
@@ -59,21 +59,21 @@ export default function LandingPage() {
         <div className="pt-12 grid grid-cols-3 gap-8 opacity-40">
            <div className="flex flex-col items-center gap-2">
               <Zap className="w-5 h-5" />
-              <span className="text-[10px] uppercase font-bold">Instant Sync</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Fast Sync</span>
            </div>
            <div className="flex flex-col items-center gap-2">
               <ShieldCheck className="w-5 h-5" />
-              <span className="text-[10px] uppercase font-bold">Secure Escrow</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Encrypted</span>
            </div>
            <div className="flex flex-col items-center gap-2">
               <ShoppingCart className="w-5 h-5" />
-              <span className="text-[10px] uppercase font-bold">Verified Stores</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Verified</span>
            </div>
         </div>
       </main>
 
       <footer className="px-6 py-8 text-center text-[9px] uppercase tracking-[0.3em] text-slate-700">
-        Cela Gateway Protocol &copy; 2024 &middot; Powered by NextJS & Firebase
+        Cela Gateway Protocol &copy; 2024 &middot; Settlement Interface
       </footer>
     </div>
   );
